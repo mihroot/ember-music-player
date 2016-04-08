@@ -1,0 +1,39 @@
+<div id="controls-progress" class="center-absolute">
+    <div id="c-p-select"></div>
+    <div id="c-p-loaded"></div>
+    <div id="c-p-played"></div>
+    <div id="c-p-t-left"></div>
+</div>
+
+<div id="control-buttons" class="center-absolute">
+    <a id="control-repeat" class="control-btn squared mR20px" title="Repeat track" onClick="return Player.toggleRepeat();"><i class="glyphicon glyphicon-retweet"></i> </a>
+
+    <!--a class="control-btn squared mR20px" onClick="return Scene.playSimilar();" title="Play similar to this artist">Sim.</a-->
+    
+    <a class="control-btn squared" title="Play previous - [&larr;]" {{action 'playPrev'}}><i class="glyphicon glyphicon-backward"></i></a>
+    <a class="control-btn squared" title="Play/Pause - [Space]" {{action 'playPause'}}>
+        {{#if AudioPlayer.is_paused}}
+            <i class="glyphicon glyphicon-play"></i>
+        {{else}}
+            <i class="glyphicon glyphicon-pause"></i>
+        {{/if}}
+    </a>
+    <a class="control-btn squared" title="Play next - [&rarr;]" {{action 'playNext'}}><i class="glyphicon glyphicon-forward"></i></a>
+    
+    <a class="control-btn squared mL20px" title="Search" {{action "toggleSearchModal"}}><i class="glyphicon glyphicon-search"></i></a>
+</div>
+
+{{#if is_showing_search_modal}}
+  {{#modal-dialog close="toggleSearchModal"
+                  targetAttachment="center"
+                  translucentOverlay=true}}
+    <div id="search">
+        <form>
+            <label>Play similar to:
+                {{input type="text" value=search_query_string placeholder=AudioPlayer.CurrentPlaylistItem.artist}}
+            </label>
+            <button type="submit" class="mL5px" {{action 'search'}}>play</button>
+        </form>
+    </div>
+  {{/modal-dialog}}
+{{/if}}

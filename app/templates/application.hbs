@@ -1,3 +1,30 @@
-<h2 id="title">Welcome to Ember</h2>
+{{#if vk.is_logged}}
+<div id="user-info">
+    {{#link-to "index"}}
+        {{#if vk.User.photo_50}}
+            <img id="user-info-ava" src="{{vk.User.photo_100}}" width="45" height="45">
+        {{else}}
+            <img id="user-info-ava" src="/img/misc/no_photo.gif" width="45" height="45">
+        {{/if}}
+    {{/link-to}}
+    <div style="margin-left:56px;">
+        <div id="user-info-name">Hola, {{vk.User.first_name}}</div>
+        <div id="user-logout" align="right">{{#link-to "auth.logout"}}Sign out{{/link-to}}</div>
+    </div>
+</div>
 
 {{outlet}}
+
+{{else}}
+<div id="vk-login">
+    <h2>Please sign in:</h2>
+    <p>
+        <a class="btn-sl btn-sl-big btn-sl-vk" title="VK Login" {{action 'vkLogin'}}>
+            <i class="ico-social ico-vk"></i><i class="btn-sl-separator separator-vk"></i>VK.com
+        </a>
+    </p>
+    <div class="mT35px f12" style="width:240px; margin: 0 auto; line-height:18px;">
+        Don't have VK account? - <a href="http://vk.com/" target="_blank">register</a> or check {{#link-to "index"}}demo version{{/link-to}}
+    </div>
+</div>
+{{/if}}

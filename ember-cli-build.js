@@ -20,5 +20,15 @@ module.exports = function(defaults) {
   // please specify an object with the list of modules as keys
   // along with the exports of each module as its value.
 
+  app.import('vendor/md5-min.js');
+  
+  app.import('vendor/api/lastfm/lastfm.api.js');
+  app.import('vendor/api/lastfm/lastfm.api.cache.js');
+
+  app.import('bower_components/threejs/build/three.min.js');
+  app.import('vendor/CSS3DRenderer.js');
+
+  app.import('bower_components/tweenjs/src/Tween.js');
+
   return app.toTree();
 };

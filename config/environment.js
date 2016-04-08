@@ -16,6 +16,16 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
+    },
+
+    VK: {
+      apiId: 4297865,
+      permissions: 8 //audio
+    },
+
+    LastFM: {
+      apiKey: '12ceaa11a67c256dade27f1ebfbea9db',
+      apiSecret: '155a15c8ec6132b58e83ea24c3671979'
     }
   };
 
