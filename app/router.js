@@ -7,8 +7,9 @@ const Router = Ember.Router.extend({
 
 Router.map(function() {
   this.route('auth', function() {
-    this.route('logout');
+    this.route('login');
   });
+  this.route('similar', { path: '/similar/to/:query' });
 });
 
 export default Router;

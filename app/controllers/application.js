@@ -1,24 +1,50 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
-    vk: Ember.inject.service(),
-    actions: {
-        vkLogin() {
-            var _Self = this;
-            this.get('vk').vkLogin().then(function() {
-                console.log('vkLogin getCurrentUserData');
-                _Self.get('vk').getCurrentUserData();
-            });
-        }
+
+  VK: Ember.inject.service('vk'),
+  Session: Ember.inject.service('session'),
+
+  vk_captcha_modal_shown: false,
+  vk_captcha_error: null,
+  vk_captcha_code: '',
+
+  actions: {
+    /**
+     * [logout description]
+     * @return {[type]} [description]
+     */
+    logout() {
+        this.get('Session').invalidate();
     },
 
 
     /**
-     * [init description]
+     * [vkCaptchaCodeSubmit description]
      * @return {[type]} [description]
      */
-    init() {
-        var _Self = this;
-        _Self.get('vk').getCurrentUserData();
+    vkCaptchaCodeSubmit() {
+      if (!this.get('vk_captcha_code') || !this.get('vk_captcha_error')) {
+        return;
+      }
+      this.set('vk_captcha_modal_shown', false);
+      this.get('VK').provideCaptcha(this.get('vk_captcha_error.captcha_sid'), this.get('vk_captcha_code'));
     }
+
+  },
+
+
+  /**
+   * [init description]
+   * @return {[type]} [description]
+   */
+  init() {
+    var _Self = this;
+    _Self._super(...arguments);
+    _Self.get('VK').on('captchaNeeded', function(error) {
+      _Self.set('vk_captcha_modal_shown', true);
+      _Self.set('vk_captcha_error', error);
+      _Self.set('vk_captcha_code', '');
+    });
+  }
 });

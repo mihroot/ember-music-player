@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import randomInt from '../utils/random-int';
 
 export default Ember.Component.extend({
 
@@ -7,6 +6,7 @@ export default Ember.Component.extend({
     LastFM:         Ember.inject.service('lastfm'),
     AudioPlayer:    Ember.inject.service('audio-player'),
     Playlist:       Ember.inject.service('playlist'),
+    Search:         Ember.inject.service('search'),
 
     Scene: null,
     Camera: null,
@@ -57,10 +57,10 @@ export default Ember.Component.extend({
          * [search description]
          * @return {[type]} [description]
          */
-        search(query) {
-            this.reset();
-            this.searchSimilar(query);
-        }
+        // search(query) {
+        //   this.reset();
+        //   this.get('Search').search(query);
+        // }
     },
 
 
@@ -70,7 +70,7 @@ export default Ember.Component.extend({
      */
     didInsertElement() {
         
-        console.log('didInsertElement');
+        console.log('Player Widget didInsertElement');
 
         var _Self = this;
         
@@ -84,16 +84,55 @@ export default Ember.Component.extend({
             _Self.moveToObject(PlaylistItem.threeObject);
         });
 
-        var _Playlist = _Self.get('Playlist');
-        _Self.get('VK').getCurrentUserAudio().then(function(response) {
-            var _playlist_items = _Playlist.processTracksFromVK(response);
-            Ember.Logger.info('VK->getCurrentUserAudio: ' + _playlist_items.length + ' tracks added to playlist');
 
-            if (_playlist_items.length) {
-                _Self.addPlaylistItemsToScene(_playlist_items);
-                _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
+        _Self.get('Playlist').on('playlistItemsAdded', function(playlist_items) {
+            console.log('.on(playlistItemsAdded)');
+            if (playlist_items.length) {
+                _Self.addPlaylistItemsToScene(playlist_items);
+                if (!_Self.get('AudioPlayer.CurrentPlaylistItem')) {
+                    _Self.get('AudioPlayer').setTrack(playlist_items[0]);
+                }
             }
         });
+        _Self.startPlayback();
+
+         
+        _Self.get('Search').on('searchInitiated', function() {
+            _Self.reset();
+        });
+        
+
+
+        // var _Playlist = _Self.get('Playlist');
+        // _Self.get('VK').getCurrentUserAudio().then(function(response) {
+        //     var _playlist_items = _Playlist.processTracksFromVK(response);
+        //     Ember.Logger.info('VK->getCurrentUserAudio: ' + _playlist_items.length + ' tracks added to playlist');
+
+        //     if (_playlist_items.length) {
+        //         _Self.addPlaylistItemsToScene(_playlist_items);
+        //         _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
+        //     }
+        // });
+    },
+
+
+    didRender() {
+        // Ember.run.scheduleOnce('afterRender', this, 'startPlayback');
+    },
+
+
+    startPlayback() {
+
+        var _Self = this;
+
+        // var _Playlist = _Self.get('Playlist');
+        // var _playlist_items = _Playlist.processTracksFromVK(_Self.get('PlaylistItems'));
+        // Ember.Logger.info('VK->getCurrentUserAudio: ' + _playlist_items.length + ' tracks added to playlist');
+
+        if (_Self.get('Playlist.items')) {
+            _Self.addPlaylistItemsToScene(_Self.get('Playlist.items'));
+            // _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
+        }
     },
 
 
@@ -104,6 +143,10 @@ export default Ember.Component.extend({
     willDestroyElement() {
         // Unubscribe from AudioPlayer events
         this.get('AudioPlayer').off('playlistItemSet');
+        // Unubscribe from Playlist events
+        this.get('Playlist').off('playlistItemsAdded');
+        // Unubscribe from Search events
+        this.get('Search').off('searchInitiated');
 
         this.$(window).unbind('.player_widget');
         this.$('body').unbind('.player_widget');
@@ -115,6 +158,7 @@ export default Ember.Component.extend({
      * @return {[type]} [description]
      */
     parentViewDidChange() {
+      console.log('parent view changed');
         this.reset();
     },
 
@@ -123,7 +167,7 @@ export default Ember.Component.extend({
      * [reset description]
      * @return {[type]} [description]
      */
-    reset() { 
+    reset() {
         var _Self = this;
 
         _Self.get('AudioPlayer').reset();
@@ -273,11 +317,11 @@ export default Ember.Component.extend({
 
         items.every(function(_Item) {
 
-            // Check if we reached visible objects per scene limit           
+            // Check if we reached visible objects per scene limit
             if (append && _Scene.children.length >= _Self._objects_limit_to_show) {
                 // Ember.Logger.info('Max objects per scene limit reached.');
                 return false;
-            }       
+            }
             
             if (!_Item['threeObject']) {
                 
@@ -475,7 +519,7 @@ export default Ember.Component.extend({
             
             }
             
-        }   
+        }
 
     },
 
@@ -550,12 +594,12 @@ export default Ember.Component.extend({
         // If tween was started from object that is not visible now, reset _Self._MovingFromObject
         if (_Self._MovingFromObject && _Self._MovingFromObject.position.z > 0) {
             _Self._MovingFromObject = null;
-        }   
+        }
         
         
         // If new object is behind camera, set _Self._MovingFromObject only if it == null.
         // In case if multiple clicks for previous track, we need valid Z coordinate, that calculated only for visible objects
-        if ((_Object.position.z > 0 && !_Self._MovingFromObject) || _Object.position.z <= 0) { 
+        if ((_Object.position.z > 0 && !_Self._MovingFromObject) || _Object.position.z <= 0) {
             _Self._MovingFromObject = _Self._ActiveThreeObject;
         }
         
@@ -715,7 +759,7 @@ export default Ember.Component.extend({
         
         Ember.assert('You must pass a valid context to animate', Context);
 
-        window.requestAnimationFrame( 
+        window.requestAnimationFrame(
             function() {
                 Context.animate(Context);
             }
@@ -757,42 +801,42 @@ export default Ember.Component.extend({
      * @param  {[type]} query [description]
      * @return {[type]}   [description]
      */
-    searchSimilar(query) {
-        var _Self = this;
+    // searchSimilar(query) {
+    //     var _Self = this;
 
-        return _Self.get('LastFM').artistGetSimilar(query, 20).then(function(data) {
+    //     return _Self.get('LastFM').artistGetSimilar(query, 20).then(function(data) {
             
-            Ember.Logger.info('searchSimilar: ' + data.length + ' artists found');
+    //         Ember.Logger.info('searchSimilar: ' + data.length + ' artists found');
             
-            data.forEach(function(artist) {
+    //         data.forEach(function(artist) {
 
-                var _query = {
-                    q: artist.name,
-                    performer_only: 1,
-                    count: 30,
-                    sort: 2 // 2 — popularity, 1 — duration, 0 - add date
-                };
+    //             var _query = {
+    //                 q: artist.name,
+    //                 performer_only: 1,
+    //                 count: 30,
+    //                 sort: 2 // 2 — popularity, 1 — duration, 0 - add date
+    //             };
 
-                _Self.get('VK').api('audio.search', _query).then(function(response) {
+    //             _Self.get('VK').api('audio.search', _query).then(function(response) {
                     
-                    //-1, VK return total audio files in first row
-                    var _items_found = (response.response.length - 1);
-                    // console.log('VKSearchAudio: ' + artist.name + ' - ' + _items_found + ' items found ');
-                    if (_items_found) {
-                        //Calc random audio index
-                        var _i = randomInt(1, _items_found);
+    //                 //-1, VK return total audio files in first row
+    //                 var _items_found = (response.response.length - 1);
+    //                 // console.log('VKSearchAudio: ' + artist.name + ' - ' + _items_found + ' items found ');
+    //                 if (_items_found) {
+    //                     //Calc random audio index
+    //                     var _i = randomInt(1, _items_found);
 
-                        var _playlist_items = _Self.get('Playlist').processTracksFromVK(response.response[_i]);
-                        _Self.addPlaylistItemsToScene(_playlist_items);
+    //                     var _playlist_items = _Self.get('Playlist').processTracksFromVK(response.response[_i]);
+    //                     _Self.addPlaylistItemsToScene(_playlist_items);
                         
-                        if (!_Self.get('AudioPlayer.CurrentPlaylistItem')) {
-                            _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
-                        }
-                    }
+    //                     if (!_Self.get('AudioPlayer.CurrentPlaylistItem')) {
+    //                         _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
+    //                     }
+    //                 }
 
-                }, function(error){console.log(error);});
-            });
-        }, function(){});
-    }
+    //             }, function(error){console.log(error);});
+    //         });
+    //     }, function(){});
+    // }
 
 });

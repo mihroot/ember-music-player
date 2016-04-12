@@ -189,7 +189,7 @@ export default Ember.Service.extend(Ember.Evented, {
             _Self.setTrack(_PlaylistItem);
         }
         
-        return false;      
+        return false;
     },
 
 

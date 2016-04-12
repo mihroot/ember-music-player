@@ -19,7 +19,7 @@ const PlaylistItem = {
     },
 };
 
-export default Ember.Service.extend({
+export default Ember.Service.extend(Ember.Evented, {
     
     items: Ember.A(),
     items_count: 0,
@@ -35,6 +35,10 @@ export default Ember.Service.extend({
     processTracksFromVK(tracks) {
 
         var _Self = this;
+
+        if (!tracks) {
+            return [];
+        }
         
         if(!Ember.isArray(tracks)) {
             tracks = [tracks];
@@ -48,6 +52,7 @@ export default Ember.Service.extend({
             }
         });
 
+        _Self.trigger('playlistItemsAdded', _added_items);
         return _added_items;
     },
 

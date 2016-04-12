@@ -18,6 +18,12 @@ module.exports = function(environment) {
       // when it is created
     },
 
+    'ember-simple-auth': {
+      authenticationRoute:          'auth.login',
+      routeAfterAuthentication:     'index',
+      routeIfAlreadyAuthenticated:  'index'
+    },
+
     VK: {
       apiId: 4297865,
       permissions: 8 //audio
