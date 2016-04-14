@@ -38,6 +38,7 @@ export default Ember.Component.extend({
       }
 
       this.get('Search').search(_query);
+      this.set('search_query_string', '');
       //this.sendAction('action', 'search', _query);
     }
   },

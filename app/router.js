@@ -10,6 +10,7 @@ Router.map(function() {
     this.route('login');
   });
   this.route('similar', { path: '/similar/to/:query' });
+  this.route('demo');
 });
 
 export default Router;

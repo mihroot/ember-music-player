@@ -32,6 +32,10 @@ module.exports = function(environment) {
     LastFM: {
       apiKey: '12ceaa11a67c256dade27f1ebfbea9db',
       apiSecret: '155a15c8ec6132b58e83ea24c3671979'
+    },
+
+    Soundcloud: {
+      client_id: '258b552acd09074b03f147ab423acd04'
     }
   };
 

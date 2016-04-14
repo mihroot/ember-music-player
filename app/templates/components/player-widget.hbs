@@ -1,3 +1,5 @@
 <div id="player-threejs-container"></div>
 
-{{player-audio-controls action="onPlayerControlsAction"}}
+{{#if AudioPlayer.CurrentPlaylistItem}}
+    {{player-audio-controls action="onPlayerControlsAction"}}
+{{/if}}

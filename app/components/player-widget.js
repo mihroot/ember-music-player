@@ -129,9 +129,10 @@ export default Ember.Component.extend({
         // var _playlist_items = _Playlist.processTracksFromVK(_Self.get('PlaylistItems'));
         // Ember.Logger.info('VK->getCurrentUserAudio: ' + _playlist_items.length + ' tracks added to playlist');
 
-        if (_Self.get('Playlist.items')) {
+        var _playlist_items = _Self.get('Playlist.items');
+        if (_playlist_items.length) {
             _Self.addPlaylistItemsToScene(_Self.get('Playlist.items'));
-            // _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
+            _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
         }
     },
 
@@ -793,50 +794,5 @@ export default Ember.Component.extend({
 
         _Renderer.setSize( window.innerWidth, window.innerHeight );
 
-    },
-
-
-    /**
-     * [searchSimilar description]
-     * @param  {[type]} query [description]
-     * @return {[type]}   [description]
-     */
-    // searchSimilar(query) {
-    //     var _Self = this;
-
-    //     return _Self.get('LastFM').artistGetSimilar(query, 20).then(function(data) {
-            
-    //         Ember.Logger.info('searchSimilar: ' + data.length + ' artists found');
-            
-    //         data.forEach(function(artist) {
-
-    //             var _query = {
-    //                 q: artist.name,
-    //                 performer_only: 1,
-    //                 count: 30,
-    //                 sort: 2 // 2 — popularity, 1 — duration, 0 - add date
-    //             };
-
-    //             _Self.get('VK').api('audio.search', _query).then(function(response) {
-                    
-    //                 //-1, VK return total audio files in first row
-    //                 var _items_found = (response.response.length - 1);
-    //                 // console.log('VKSearchAudio: ' + artist.name + ' - ' + _items_found + ' items found ');
-    //                 if (_items_found) {
-    //                     //Calc random audio index
-    //                     var _i = randomInt(1, _items_found);
-
-    //                     var _playlist_items = _Self.get('Playlist').processTracksFromVK(response.response[_i]);
-    //                     _Self.addPlaylistItemsToScene(_playlist_items);
-                        
-    //                     if (!_Self.get('AudioPlayer.CurrentPlaylistItem')) {
-    //                         _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
-    //                     }
-    //                 }
-
-    //             }, function(error){console.log(error);});
-    //         });
-    //     }, function(){});
-    // }
-
+    }
 });

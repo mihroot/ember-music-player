@@ -45,7 +45,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SearchEnabledRouteMix
           if (_items_found) {
             //Calc random audio index
             var _i = randomInt(1, _items_found);
-            var _playlist_items = _Self.get('Playlist').processTracksFromVK(response.response[_i]);
+            _Self.get('Playlist').processTracksFromVK(response.response[_i]);
             // _Self.addPlaylistItemsToScene(_playlist_items);
 
             // if (!_Self.get('AudioPlayer.CurrentPlaylistItem')) {

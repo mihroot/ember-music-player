@@ -30,7 +30,6 @@ export default Ember.Service.extend(Ember.Evented, {
    * @return {[type]} [description]
    */
   vkInit() {
-
     var _Self = this;
 
     if (_Self._InitPromise) {
@@ -99,7 +98,6 @@ export default Ember.Service.extend(Ember.Evented, {
    * @return {[type]} [description]
    */
   vkLogin() {
-
     var _Self = this;
 
     _Self.set('_LoginStatusPromise', null);
@@ -130,7 +128,6 @@ export default Ember.Service.extend(Ember.Evented, {
    * @return {[type]}          [description]
    */
   _checkPermissions(response) {
-
     var _Self = this;
 
     if (_Self._CheckPermissionsPromise) {
@@ -164,7 +161,6 @@ export default Ember.Service.extend(Ember.Evented, {
     });
 
     return _Self._CheckPermissionsPromise;
-
   },
 
 
@@ -173,7 +169,6 @@ export default Ember.Service.extend(Ember.Evented, {
    * @return {[type]} [description]
    */
   vkLogout() {
-
     var _Self = this;
 
     return _Self.getLoginStatus().then(function() {
@@ -333,7 +328,6 @@ export default Ember.Service.extend(Ember.Evented, {
    * @return {[type]}                [description]
    */
   _handleError(error, _resolver_args) {
-    
     // var _method     = _resolver_args[0];
     // var _parameters = _resolver_args[1];
     // var _resolve    = _resolver_args[2];
@@ -361,10 +355,7 @@ export default Ember.Service.extend(Ember.Evented, {
       default:
         _reject(error);
       break;
-
     }
-    
-    //console.log(Social._VKRequestsQueue);
   },
 
 
@@ -398,7 +389,6 @@ export default Ember.Service.extend(Ember.Evented, {
    * @return {[type]} [description]
    */
   getCurrentUserData() {
-
     var _Self = this;
     console.log('getCurrentUserData');
     return _Self.getLoginStatus().then(function() {
@@ -432,9 +422,7 @@ export default Ember.Service.extend(Ember.Evented, {
    * @return {[type]} [description]
    */
   getCurrentUserAudio() {
-
     var _Self = this;
-
     return _Self.getLoginStatus().then(function() {
       return new Ember.RSVP.Promise(function(resolve, reject) {
         _Self
