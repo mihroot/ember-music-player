@@ -184,6 +184,8 @@ export default Ember.Service.extend(Ember.Evented, {
     this.set('items_count', 0);
 
     this.set('_reset_time', Date.now());
+
+    this.trigger('playlistReset');
   },
 
 

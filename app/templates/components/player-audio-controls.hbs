@@ -30,7 +30,9 @@
     <div id="search">
         <form>
             <label>Play similar to:
-                {{input type="text" value=search_query_string placeholder=AudioPlayer.CurrentPlaylistItem.artist}}
+                {{#focus-in}}
+                    {{input type="text" name="query" value=search_query_string placeholder=AudioPlayer.CurrentPlaylistItem.artist}}
+                {{/focus-in}}
             </label>
             <button type="submit" class="mL5px" {{action 'search'}}>play</button>
         </form>

@@ -16,9 +16,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SearchEnabledRouteMix
   model() {
     var _Self = this;
 
-    _Self._super(...arguments);
-
     var _Playlist = _Self.get('Playlist');
+    _Playlist.reset();
     _Self.get('VK').getCurrentUserAudio().then(function(tracks) {
 
       var _playlist_items = _Playlist.processTracksFromVK(tracks);

@@ -21,6 +21,7 @@ export default Ember.Service.extend(Ember.Evented, {
      */
     init() {
         this.set('_original_document_title', document.title);
+        this.get('Playlist').on('playlistReset', this, 'reset');
     },
 
 

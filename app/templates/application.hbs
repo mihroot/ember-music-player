@@ -32,7 +32,9 @@
     <div id="search">
         <form>
             <img src="{{vk_captcha_error.captcha_img}}">
-            <div>{{input type="text" value=vk_captcha_code}}</div>
+            {{#focus-in}}
+                {{input type="text" value=vk_captcha_code}}
+            {{/focus-in}}
             <div><button type="submit" class="mL5px" {{action 'vkCaptchaCodeSubmit'}}>submit</button></div>
         </form>
     </div>

@@ -109,8 +109,8 @@ export default Ember.Component.extend({
    */
   willDestroyElement() {
     // Unubscribe from AudioPlayer events
-    this.get('AudioPlayer').off('onPlayProgress');
-    this.get('AudioPlayer').off('onLoadProgress');
+    this.get('AudioPlayer').off('onPlayProgress', this, '_onPlayProgress');
+    this.get('AudioPlayer').off('onLoadProgress', this, '_onLoadProgress');
 
     this.$(document).unbind('.player_audio_controls');
     this.$(window).unbind('.player_audio_controls');

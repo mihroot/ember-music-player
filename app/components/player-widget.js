@@ -44,13 +44,13 @@ export default Ember.Component.extend({
          * @param  {[type]} method_name [description]
          * @return {[type]}             [description]
          */
-        onPlayerControlsAction(method_name) {
-            var _args = Array.prototype.slice.call(arguments).splice(1, arguments.length);
-            if (this.get('actions.'+method_name)) {
-                return this.actions[method_name].apply(this, _args);
-            }
-            return false;
-        },
+        // onPlayerControlsAction(method_name) {
+        //     var _args = Array.prototype.slice.call(arguments).splice(1, arguments.length);
+        //     if (this.get('actions.'+method_name)) {
+        //         return this.actions[method_name].apply(this, _args);
+        //     }
+        //     return false;
+        // },
 
 
         /**
@@ -80,61 +80,63 @@ export default Ember.Component.extend({
         _Self.animate(_Self);
 
         // Subscribe to AudioPlayer events
-        _Self.get('AudioPlayer').on('playlistItemSet', function(PlaylistItem) {
-            _Self.moveToObject(PlaylistItem.threeObject);
-        });
-
-
-        _Self.get('Playlist').on('playlistItemsAdded', function(playlist_items) {
-            console.log('.on(playlistItemsAdded)');
-            if (playlist_items.length) {
-                _Self.addPlaylistItemsToScene(playlist_items);
-                if (!_Self.get('AudioPlayer.CurrentPlaylistItem')) {
-                    _Self.get('AudioPlayer').setTrack(playlist_items[0]);
-                }
-            }
-        });
-        _Self.startPlayback();
-
-         
-        _Self.get('Search').on('searchInitiated', function() {
-            _Self.reset();
-        });
-        
-
-
-        // var _Playlist = _Self.get('Playlist');
-        // _Self.get('VK').getCurrentUserAudio().then(function(response) {
-        //     var _playlist_items = _Playlist.processTracksFromVK(response);
-        //     Ember.Logger.info('VK->getCurrentUserAudio: ' + _playlist_items.length + ' tracks added to playlist');
-
-        //     if (_playlist_items.length) {
-        //         _Self.addPlaylistItemsToScene(_playlist_items);
-        //         _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
-        //     }
-        // });
+        _Self.get('AudioPlayer').on('playlistItemSet', _Self, '_onPlaylistItemSet');
+        _Self.get('Playlist').on('playlistItemsAdded', _Self, '_onPlaylistItemsAdded');
+        _Self.get('Playlist').on('playlistReset', _Self, 'reset');
+        // _Self.startPlayback();
     },
 
 
+    /**
+     * [_onPlaylistItemSet description]
+     * @param  {[type]} PlaylistItem [description]
+     * @return {[type]}              [description]
+     */
+    _onPlaylistItemSet(PlaylistItem) {
+        this.moveToObject(PlaylistItem.threeObject);
+    },
+
+
+    /**
+     * [_onPlaylistItemsAdded description]
+     * @param  {[type]} playlist_items [description]
+     * @return {[type]}                [description]
+     */
+    _onPlaylistItemsAdded(playlist_items) {
+        var _Self = this;
+        console.log('.on(playlistItemsAdded)');
+        if (playlist_items.length) {
+            _Self.addPlaylistItemsToScene(playlist_items);
+            if (!_Self.get('AudioPlayer.CurrentPlaylistItem')) {
+                _Self.get('AudioPlayer').setTrack(playlist_items[0]);
+            }
+        }
+    },
+
+
+    /**
+     * [didRender description]
+     * @return {[type]} [description]
+     */
     didRender() {
         // Ember.run.scheduleOnce('afterRender', this, 'startPlayback');
     },
 
 
-    startPlayback() {
+    // startPlayback() {
 
-        var _Self = this;
+    //     var _Self = this;
 
-        // var _Playlist = _Self.get('Playlist');
-        // var _playlist_items = _Playlist.processTracksFromVK(_Self.get('PlaylistItems'));
-        // Ember.Logger.info('VK->getCurrentUserAudio: ' + _playlist_items.length + ' tracks added to playlist');
+    //     // var _Playlist = _Self.get('Playlist');
+    //     // var _playlist_items = _Playlist.processTracksFromVK(_Self.get('PlaylistItems'));
+    //     // Ember.Logger.info('VK->getCurrentUserAudio: ' + _playlist_items.length + ' tracks added to playlist');
 
-        var _playlist_items = _Self.get('Playlist.items');
-        if (_playlist_items.length) {
-            _Self.addPlaylistItemsToScene(_Self.get('Playlist.items'));
-            _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
-        }
-    },
+    //     var _playlist_items = _Self.get('Playlist.items');
+    //     if (_playlist_items.length) {
+    //         _Self.addPlaylistItemsToScene(_Self.get('Playlist.items'));
+    //         _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
+    //     }
+    // },
 
 
     /**
@@ -142,12 +144,12 @@ export default Ember.Component.extend({
      * @return {[type]} [description]
      */
     willDestroyElement() {
+        console.log('willDestroyElement');
         // Unubscribe from AudioPlayer events
-        this.get('AudioPlayer').off('playlistItemSet');
+        this.get('AudioPlayer').off('playlistItemSet', this, '_onPlaylistItemSet');
         // Unubscribe from Playlist events
-        this.get('Playlist').off('playlistItemsAdded');
-        // Unubscribe from Search events
-        this.get('Search').off('searchInitiated');
+        this.get('Playlist').off('playlistItemsAdded', this, '_onPlaylistItemsAdded');
+        this.get('Playlist').off('playlistReset', this, 'reset');
 
         this.$(window).unbind('.player_widget');
         this.$('body').unbind('.player_widget');
@@ -158,10 +160,10 @@ export default Ember.Component.extend({
      * [parentViewDidChange description]
      * @return {[type]} [description]
      */
-    parentViewDidChange() {
-      console.log('parent view changed');
-        this.reset();
-    },
+    // parentViewDidChange() {
+    //     console.log('parent view changed');
+    //     this.reset();
+    // },
 
 
     /**
@@ -171,8 +173,8 @@ export default Ember.Component.extend({
     reset() {
         var _Self = this;
 
-        _Self.get('AudioPlayer').reset();
-        _Self.get('Playlist').reset();
+        // _Self.get('AudioPlayer').reset();
+        // _Self.get('Playlist').reset();
 
         var _Scene = _Self.get('Scene');
         var _scene_children_length = _Scene.children.length;
@@ -231,10 +233,10 @@ export default Ember.Component.extend({
 
     /**
      * [createThreeObject description]
-     * @param  {[type]} entry [description]
+     * @param  {[type]} PlaylistItem [description]
      * @return {[type]}       [description]
      */
-    createThreeObject(entry) {
+    createThreeObject(PlaylistItem) {
         
         var _Self = this;
 
@@ -243,20 +245,20 @@ export default Ember.Component.extend({
             dom.style.display   = 'block';
             dom.style.cursor    = 'pointer';
             dom.className       = 'entry';
-            dom.id              = entry.p_offset+'-entry';
+            dom.id              = PlaylistItem.p_offset+'-entry';
 
         var image = document.createElement( 'img' );
             image.className     = 'album-image';
             image.style.width   = '100%';
             image.style.height  = '100%';
-            image.src = entry.album.image;
+            image.src = PlaylistItem.album.image;
             image.style.display = image.src?'block':'none';
         
         dom.appendChild( image );
 
         var desc = document.createElement( 'div' );
             desc.className = 'desc';
-            desc.innerHTML = entry.artist + ' - ' + entry.title;
+            desc.innerHTML = PlaylistItem.artist + ' - ' + PlaylistItem.title;
     
         dom.appendChild( desc );
         
@@ -283,7 +285,7 @@ export default Ember.Component.extend({
         dom.addEventListener( 'click', function( event ) {
             event.stopPropagation();
             if (_Object !== _Self._ActiveThreeObject) {
-               _Self.get('AudioPlayer').setTrack(entry);
+               _Self.get('AudioPlayer').setTrack(PlaylistItem);
             } else {
                 _Self.get('AudioPlayer').playPause();
             }

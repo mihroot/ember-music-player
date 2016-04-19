@@ -18,12 +18,13 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SearchEnabledRouteMix
   model(params) {
     var _Self = this;
 
-    _Self._super(...arguments);
-
     //var params = this.paramsFor(this.routeName);
     console.log('Similar.js ' + params.query);
     var _artist_name = params.query;
 
+    var _Playlist = _Self.get('Playlist');
+
+    _Playlist.reset();
     _Self.get('LastFM').artistGetSimilar(_artist_name, 20).then(function(data) {
 
       Ember.Logger.info('searchSimilar: ' + data.length + ' artists found');
@@ -45,7 +46,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SearchEnabledRouteMix
           if (_items_found) {
             //Calc random audio index
             var _i = randomInt(1, _items_found);
-            _Self.get('Playlist').processTracksFromVK(response.response[_i]);
+            _Playlist.processTracksFromVK(response.response[_i]);
             // _Self.addPlaylistItemsToScene(_playlist_items);
 
             // if (!_Self.get('AudioPlayer.CurrentPlaylistItem')) {
