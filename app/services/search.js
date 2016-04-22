@@ -3,12 +3,21 @@ import Ember from 'ember';
 export default Ember.Service.extend(Ember.Evented, {
   
   /**
-   * [search description]
+   * [searchSimilar description]
    * @param  {[type]} query [description]
    * @return {[type]}       [description]
    */
-  search(query) {
-    this.trigger('searchInitiated', query);
+  searchSimilar(query) {
+    this.trigger('searchSimilarToInitiated', query);
+  },
+
+  /**
+   * [searchTopTracks description]
+   * @param  {[type]} query [description]
+   * @return {[type]}       [description]
+   */
+  searchTopTracks(query) {
+    this.trigger('searchTopTracksInitiated', query);
   }
   
 });

@@ -29,7 +29,12 @@
                   translucentOverlay=true}}
     <div id="search">
         <form>
-            <label>Play similar to:
+            <label>
+                {{#if searchSimilar}}
+                    Play similar to:
+                {{else}}
+                    Play top of:
+                {{/if}}
                 {{#focus-in}}
                     {{input type="text" name="query" value=search_query_string placeholder=AudioPlayer.CurrentPlaylistItem.artist}}
                 {{/focus-in}}

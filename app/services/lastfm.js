@@ -87,5 +87,42 @@ export default Ember.Service.extend({
                                             }
                                           });
         });
+    },
+
+
+    /**
+     * [artistGetTopTracks description]
+     * @param  {[type]} artist_name [description]
+     * @param  {[type]} limit       [description]
+     * @return {[type]}             [description]
+     */
+    artistGetTopTracks: function(artist_name, limit) {
+
+      var _Self = this;
+
+      return new Ember.RSVP.Promise(function(resolve, reject) {
+        _Self.get('LastFM').artist.getTopTracks({
+                                              artist: artist_name,
+                                              autocorrect: 1,
+                                              limit: limit
+                                          }, {
+                                            success(data) {
+                                              var _tracks = [];
+                                              if(data.toptracks && data.toptracks.track && Ember.isArray(data.toptracks.track)) {
+                                                _tracks = data.toptracks.track;
+                                              }
+
+                                              Ember.run(null, resolve, _tracks);
+                                            },
+                                            error(code, message) {
+                                              //6 - "The artist you supplied could not be found"
+                                              if(code === 6) {
+                                                Ember.run(null, resolve, []);
+                                              } else {
+                                                Ember.run(null, reject, message);
+                                              }
+                                            }
+                                          });
+        });
     }
 });

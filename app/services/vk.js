@@ -427,8 +427,8 @@ export default Ember.Service.extend(Ember.Evented, {
       return new Ember.RSVP.Promise(function(resolve, reject) {
         _Self
           .api('audio.get', {
-            owner_id: _Self.Session.mid,
-            count: 100
+            owner_id: _Self.Session.mid
+            // count: 100
           })
           .then(function(response) {
             if (!response.response) {

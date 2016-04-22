@@ -1,13 +1,23 @@
 import Ember from 'ember';
 import formatTime from '../utils/format-time';
 
+const SEARCH_TYPE = {SIMILAR: 'similar', TOP_TRACKS: 'top_tracks'};
+
 export default Ember.Component.extend({
 
   AudioPlayer: Ember.inject.service('audio-player'),
   Search: Ember.inject.service('search'),
 
   is_showing_search_modal: false,
+  search_type: '',
   search_query_string: '',
+
+  searchSimilar: Ember.computed('search_type', function() {
+                                    return this.get('search_type') === SEARCH_TYPE.SIMILAR;
+                                }),
+  searchTopOf: Ember.computed('search_type', function() {
+                                    return this.get('search_type') === SEARCH_TYPE.TOP_TRACKS;
+                                }),
 
   actions: {
     playPrev() {
@@ -37,9 +47,19 @@ export default Ember.Component.extend({
         return;
       }
 
-      this.get('Search').search(_query);
+      var _search_type = this.get('search_type');
+
+      switch (_search_type) {
+        case SEARCH_TYPE.SIMILAR:
+          this.get('Search').searchSimilar(_query);
+          break;
+        case SEARCH_TYPE.TOP_TRACKS:
+          this.get('Search').searchTopTracks(_query);
+          break; 
+      }
+
+      this.set('search_type', '');
       this.set('search_query_string', '');
-      //this.sendAction('action', 'search', _query);
     }
   },
 
@@ -60,6 +80,7 @@ export default Ember.Component.extend({
     // Subscribe to AudioPlayer events
     _Self.get('AudioPlayer').on('onPlayProgress', _Self, '_onPlayProgress');
     _Self.get('AudioPlayer').on('onLoadProgress', _Self, '_onLoadProgress');
+    _Self.get('AudioPlayer').on('playlistItemSet', _Self, '_resetBars');
 
 
     //Event listeners
@@ -77,13 +98,12 @@ export default Ember.Component.extend({
       } else if (event.which === 32) { //spacebar
         _Self.get('AudioPlayer').playPause();
       } else if (event.which === 70) { //f
+        _Self.set('search_type', SEARCH_TYPE.SIMILAR);
+        _Self.set('is_showing_search_modal', true);
+      } else if(event.which === 84) { //t
+        _Self.set('search_type', SEARCH_TYPE.TOP_TRACKS);
         _Self.set('is_showing_search_modal', true);
       }
-      // else if(event.which == 73) { //i
-      //     return Scene.playSimilar();
-      // } else if(event.which == 84) { //t
-      //     return Scene.playTop();
-      // }
       return false;
     });
     _Self.$(window).bind('resize.player_audio_controls', function() {
@@ -94,12 +114,6 @@ export default Ember.Component.extend({
     });
 
     _Self._centerControls();
-
-    // // Play
-    // if (!_Self.get('AudioPlayer.CurrentPlaylistItem')) {
-    //   var _playlist_items = _Self.get('Playlist.items');
-    //   _Self.get('AudioPlayer').setTrack(_playlist_items[0]);
-    // }
   },
 
 
@@ -111,6 +125,7 @@ export default Ember.Component.extend({
     // Unubscribe from AudioPlayer events
     this.get('AudioPlayer').off('onPlayProgress', this, '_onPlayProgress');
     this.get('AudioPlayer').off('onLoadProgress', this, '_onLoadProgress');
+    this.get('AudioPlayer').off('playlistItemSet', this, '_resetBars');
 
     this.$(document).unbind('.player_audio_controls');
     this.$(window).unbind('.player_audio_controls');
@@ -197,5 +212,16 @@ export default Ember.Component.extend({
 
     var _total_time = Math.floor(_duration * 1000) / 1000;
     _Audio.currentTime = _per * _total_time / 100;
+  },
+
+
+  /**
+   * [_resetBars description]
+   * @return {[type]} [description]
+   */
+  _resetBars() {
+    this.$('#c-p-played').css('width', '0%');
+    this.$('#c-p-t-left').html('');
+    this.$('#c-p-loaded').css('width', '0%');
   }
 });

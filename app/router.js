@@ -10,6 +10,7 @@ Router.map(function() {
     this.route('login');
   });
   this.route('similar', { path: '/similar/to/:query' });
+  this.route('top-of-artist', { path: '/top/of/:query' });
   this.route('demo');
 });
 
